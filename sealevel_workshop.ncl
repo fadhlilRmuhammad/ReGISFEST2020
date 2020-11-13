@@ -12,7 +12,7 @@ dateend   = 20181231
 print("REGISFEST Workshop 2020")
 print("Thank you for using this script, please cite ..... If you have any questions, feel free to contact fadhlirizki@student.unimelb.edu.au")
 f_cc  = addfile("http://tides.big.go.id:8080/thredds/dodsC/InaROMS/InaROMS_rcp45_2006_2040.nc" , "r")  ; Downloading Climate change data
-f_obs = addfile("sealevel_indo.nc", "r") ;Observation data from CMEMS, can be any data
+f_obs = addfile("ssh.pekalongan.obs.nc", "r") ;Observation data from CMEMS, can be any data
 
 ;Getting variable names
 vname = getfilevarnames(f_cc)
