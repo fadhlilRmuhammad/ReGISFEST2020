@@ -10,7 +10,7 @@ datestart = 19930101
 dateend   = 20181231
 
 print("REGISFEST Workshop 2020")
-print("Thank you for using this script, please cite ..... If you have any questions, feel free to contact fadhlirizki@student.unimelb.edu.au")
+print("Thank you for using this script, please cite https://github.com/fadhlilRmuhammad/ReGISFEST2020/releases/tag/IndoSLR-v1.0 If you have any questions, feel free to contact fadhlirizki@student.unimelb.edu.au")
 f_cc  = addfile("http://tides.big.go.id:8080/thredds/dodsC/InaROMS/InaROMS_rcp45_2006_2040.nc" , "r")  ; Downloading Climate change data
 f_obs = addfile("ssh.pekalongan.obs.nc", "r") ;Observation data from CMEMS, can be any data
 
@@ -145,5 +145,6 @@ write_table(fname2, "w", hlist, "%s,%s,%s")
 write_table(fname2, "a", alist, "%d,%3.3f,%3.3f")
 
 print("Finished, have a good day :)")
+print("https://github.com/fadhlilRmuhammad/ReGISFEST2020/releases/tag/IndoSLR-v1.0 ")
 print("mail: fadhlilrizki@student.unimelb.edu.au")
 print("mail: fadhlilmuhammad6@gmail.com")
