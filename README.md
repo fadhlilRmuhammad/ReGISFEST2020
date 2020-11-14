@@ -4,7 +4,7 @@ Indonesian Sea-Level Rise Downloader and Corrector.
 
 Pastikan komputer sudah ter-install Ubuntu subsystem, Miniconda, dan NCL.
   1. Ubuntu subsystem: https://ubuntu.com/wsl
-  2. Miniconda       : https://docs.conda.io/en/latest/miniconda.html (running menggunakan ubuntu subsystem, pilih linux installers)
+  2. Miniconda       : https://docs.conda.io/en/latest/miniconda.html (running menggunakan ubuntu subsystem, pilih linux installers, python 3.8)
   3. NCL             : https://www.ncl.ucar.edu/Download/conda.shtml
 
 Step running=>
