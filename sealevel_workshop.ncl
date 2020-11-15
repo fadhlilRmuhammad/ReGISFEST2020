@@ -6,7 +6,10 @@
 ;If you use this, please cite
 
 
-MODE = 0 ; Choose MODE: grab-correction (0), GRABONLY (1)
+MODE = 1 ; Choose MODE: grab-correction (0), GRABONLY (1)
+
+;DO NOT CHANGE THIS FOR GRAB-CORRECTION MODE (MODE = 0)!
+var = "SSH"  ;FOR GRABONLY MODE YOU CAN USE ONE OF THESE (SSH, U_VEL, V_VEL, SALT, SST)
 
 ;SPATIAL DATA OUTNAME
 outputname_nc_RCP45  = "ssh.pekalongan.RCP45.nc"
@@ -26,6 +29,22 @@ latN = -6.5
 lonL = 109.5
 lonR = 109.75
 
+print("REGISFEST Workshop 2020")
+print("Thank you for using this script, please cite https://github.com/fadhlilRmuhammad/ReGISFEST2020. If you have any questions, feel free to contact fadhlirizki@student.unimelb.edu.au")
+f_cc  = addfile( CLIMCHANGE_INPUT, "r")  ; Downloading Climate change data
+
+;Getting variable names
+vname = getfilevarnames(f_cc)
+print(vname)
+;printVarSummary (vname)
+
+if (MODE.eq.0) then
+print("RUNNING GRAB-CORRECTION MODE- INITIATING....")
+
+;Getting variables (projections)
+ssh = f_cc->$var$(: , {latS:latN}, {lonL:lonR})
+time = f_cc->OCEAN_TIME
+
 datestart = 19930101      ; OBSERVATION DATA DATE START YYYYMMDD
 yobstrt   = toint(datestart/10000)
 print(yobstrt)
@@ -36,21 +55,6 @@ print(yobend)
 
 ystrt   = 2006             ; YEAR START FOR THE CORRECTION FACTOR PERIOD
 ylast   = 2018             ; YEAR END FOR THE CORRECTION FACTOR PERIOD
-
-print("REGISFEST Workshop 2020")
-print("Thank you for using this script, please cite https://github.com/fadhlilRmuhammad/ReGISFEST2020. If you have any questions, feel free to contact fadhlirizki@student.unimelb.edu.au")
-f_cc  = addfile( CLIMCHANGE_INPUT, "r")  ; Downloading Climate change data
-
-;Getting variable names
-vname = getfilevarnames(f_cc)
-print(vname)
-;printVarSummary (vname)
-;Getting variables (projections)
-ssh = f_cc->SSH(: , {latS:latN}, {lonL:lonR})
-time = f_cc->OCEAN_TIME
-
-if (MODE.eq.0) then
-print("RUNNING GRAB-CORRECTION MODE- INITIATING....")
 
 f_obs = addfile(OBSERVATION_INPUT, "r") ;Observation data from CMEMS, can be any data
 
@@ -160,28 +164,31 @@ write_table( outputname_csv_RCP45, "a", alist, "%d,%3.3f,%3.3f")
 
 else if (MODE.eq.1) then
   print("RUNNING GRABONLY MODE- INITIATING DATA CUTTING....")
+  ;Getting variables (projections)
+  x = f_cc->$var$(: , {latS:latN}, {lonL:lonR})
+  time = f_cc->OCEAN_TIME
   print("creating yearly average, please wait")
   opt = True
   opt@nval_crit = 0
 
-  ssh_aave = wgt_areaave_Wrap(ssh, 1.0, 1.0, 0)
-  ssh_aave_mon = calculate_monthly_values(ssh_aave, "avg", 0, opt)
+  x_aave = wgt_areaave_Wrap(x, 1.0, 1.0, 0)
+  x_aave_mon = calculate_monthly_values(x_aave, "avg", 0, opt)
 
-  ssh_aave_yavg = month_to_annual(ssh_aave_mon, 1)
+  x_aave_yavg = month_to_annual(x_aave_mon, 1)
 
   print("creating climate-change output, please wait...")
   system ("rm "+outputname_nc_RCP45)  ;removing file with same name
 
   ;setfileoption("nc","Format","LargeFile")
   fout = addfile(outputname_nc_RCP45 , "c")
-  fout->ssh = ssh
+  fout->$var$ = x
   fout->latitude = f_cc->LAT({latS:latN})
   fout->longitude = f_cc->LON({lonL:lonR})
   fout->time = time
 
   yearspan_rcp = ispan(2006,2040,1)
-  hlist = [/"year", "SSH_RCP45"/]
-  alist = [/yearspan_rcp, ssh_aave_yavg/]
+  hlist = [/"year", var+"_RCP45"/]
+  alist = [/yearspan_rcp, x_aave_yavg/]
 
   write_table(outputname_csv_RCP45, "w", hlist, "%s,%s")
   write_table(outputname_csv_RCP45, "a", alist, "%d,%3.3f")
