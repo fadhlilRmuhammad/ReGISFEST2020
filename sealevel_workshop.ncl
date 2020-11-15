@@ -6,7 +6,7 @@
 ;If you use this, please cite
 
 
-MODE = 1 ; Choose MODE: grab-correction (0), GRABONLY (1)
+MODE = 0 ; Choose MODE: grab-correction (0), GRABONLY (1)
 
 ;SPATIAL DATA OUTNAME
 outputname_nc_RCP45  = "ssh.pekalongan.RCP45.nc"
@@ -26,8 +26,16 @@ latN = -6.5
 lonL = 109.5
 lonR = 109.75
 
-datestart = 19930101
-dateend   = 20181231
+datestart = 19930101      ; OBSERVATION DATA DATE START YYYYMMDD
+yobstrt   = toint(datestart/10000)
+print(yobstrt)
+
+dateend   = 20181231      ; OBSERVATION DATA DATE END YYYYMMDD
+yobend    = toint(dateend/10000)
+print(yobend)
+
+ystrt   = 2006             ; YEAR START FOR THE CORRECTION FACTOR PERIOD
+ylast   = 2018             ; YEAR END FOR THE CORRECTION FACTOR PERIOD
 
 print("REGISFEST Workshop 2020")
 print("Thank you for using this script, please cite https://github.com/fadhlilRmuhammad/ReGISFEST2020. If you have any questions, feel free to contact fadhlirizki@student.unimelb.edu.au")
@@ -81,14 +89,11 @@ ssh_aave_obs_yavg = month_to_annual(ssh_aave_obs_mon, 1)
 ;printVarSummary(ssh_aave_obs_mon)
 
 ;DOWNSCALING
-ystrt   = 2006
-ylast   = 2018
-
 
 ;USING DELTA METHOD
 print("creating correction factor...")
 model_avg  = dim_avg_n_Wrap(ssh_aave_yavg(0:(ylast - ystrt)), 0)
-obs_avg    = dim_avg_n_Wrap(ssh_aave_obs_yavg((ystrt - 1993):(ylast - 1993)), 0)
+obs_avg    = dim_avg_n_Wrap(ssh_aave_obs_yavg((ystrt - yobstrt):(ylast - yobstrt)), 0)
 ;print(correction_factor)
 
 print("Downscaling the data...")
@@ -102,11 +107,11 @@ model_corrected = ssh_aave_yavg + correction_factor ;
 ;model_corrected = model_avg * correction factor ;USING MULTIPLICATION
 
 print("creating mixed obs-model data...")
-mixed_ssh = new((/(2040 - 1993 + 1)/), double)
+mixed_ssh = new((/(2040 - yobstrt + 1)/), double)
 
-j = 2018 - 2006
-do i = 0, (2040 - 1993)
-  if (i.le.(2018 - 1993)) then
+j = ylast - ystrt
+do i = 0, (2040 - yobstrt)
+  if (i.le.(ylast - yobstrt)) then
     mixed_ssh(i) = ssh_aave_obs_yavg(i)
   else
     mixed_ssh(i) = (/model_corrected(j)/)
@@ -139,7 +144,7 @@ fout->time_obs = time
 
 print("creating yearly data (csv), please wait...")
 
-yearspan = ispan(1993,2040,1)
+yearspan = ispan(yobstrt,2040,1)
 hlist = [/"year", "SSH_obs", "SSH_mixed"/]
 alist = [/yearspan, ssh_aave_obs_yavg, mixed_ssh/]
 
