@@ -1,6 +1,7 @@
 # ReGISFEST2020
 
 Indonesian Sea-Level Rise Downloader and Corrector.
+https://github.com/fadhlilRmuhammad/ReGISFEST2020/releases/edit/IndoSLR-v1.2
 
 Pastikan komputer sudah ter-install Ubuntu subsystem, Miniconda, dan NCL.
   1. Ubuntu subsystem: https://ubuntu.com/wsl
